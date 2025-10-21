@@ -2,7 +2,7 @@
 
 with
 customer_value as (
-    select * from {{ ref('int_ltv') }}
+    select * from {{ ref('int_user_ltv') }}
 ),
 
 customer_acquisition_cost as (
@@ -20,3 +20,6 @@ select
 from customer_value as ltv
 INNER JOIN customer_acquisition_cost as cac
 on ltv.user_id = cac.user_id
+
+-- where campaign_id = 'organic'
+-- how to display costumer_roi for organic customers? >>> 0 or 100%?

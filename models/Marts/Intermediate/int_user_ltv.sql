@@ -12,7 +12,7 @@ daily_purchases as (
         user_id
         , date(transaction_time) as transaction_date
         , sum(total_value) as daily_revenue
-    from {{source("powerflow",'transactions')}}
+    from {{ ref('stg_transactions') }}
     group by user_id, transaction_date
 )
 
