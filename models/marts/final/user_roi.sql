@@ -11,6 +11,7 @@ customer_acquisition_cost as (
    
 select 
     ltv.user_id 
+    , ltv.transaction_date
     , ltv.lifetime
     , ltv.cumulative_daily_revenue
     , cac.channel 
