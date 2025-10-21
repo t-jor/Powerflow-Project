@@ -2,7 +2,7 @@
 
 with
 appsflyer as (
-    select * from {{ source('powerflow', 'appsflyer_raw') }}
+    select * from {{ ref('stg_appsflyer') }}
 ),
 
 google_ads_prep as (

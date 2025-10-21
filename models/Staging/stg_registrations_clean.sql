@@ -1,4 +1,15 @@
 {{ config(materialized='table') }}
 
-select * from {{ source('powerflow', 'registrations_raw') }}
-where user_id is not null
+with 
+registrations as (
+    select * from {{ source('powerflow', 'registrations_raw') }}
+),
+
+cleaned as (
+    select * from registrations
+    where user_id is not null
+)
+
+select * from cleaned
+
+
