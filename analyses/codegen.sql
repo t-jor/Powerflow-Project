@@ -33,6 +33,49 @@
     materialized='table'
 ) }}
 
+
+--test3: schema.yml mit Beschreibungen und Tests für staging-Modelle generieren lassen:
+
 {{ codegen.generate_model_yaml(
     model_names=['stg_registrations_clean']
 ) }}
+
+{{ codegen.generate_model_yaml(
+    model_names=['stg_appsflyer']
+) }}
+
+{{ codegen.generate_model_yaml(
+    model_names=['stg_google_ads']
+) }}
+
+{{ codegen.generate_model_yaml(
+    model_names=['stg_transactions']
+) }}
+
+
+--test4: schema.yml mit Beschreibungen und Tests für int-Modelle generieren lassen:
+
+{{ codegen.generate_model_yaml(
+    model_names=['int_marketing_attribution']
+) }}
+
+{{ codegen.generate_model_yaml(
+    model_names=['int_users_with_attribution']
+) }}
+
+{{ codegen.generate_model_yaml(
+    model_names=['int_user_ltv']
+) }}
+
+
+--test5: schema.yml mit Beschreibungen und Tests für roi-Modell generieren lassen:
+
+{{ codegen.generate_model_yaml(
+    model_names=['user_roi']
+) }}
+
+
+
+
+
+

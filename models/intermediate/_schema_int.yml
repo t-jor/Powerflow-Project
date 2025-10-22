@@ -1,0 +1,145 @@
+version: 2
+
+models:
+  - name: int_marketing_attribution
+    description: |
+      User aquisition data of appsflyer and google_ads combined.
+      - device_id is unique and not_null
+      - attribution cost/ date and campaign id not_null
+      Row granularity: device_id
+
+    columns:
+      - name: device_id
+        data_type: varchar
+        description: "A unique identifier for the device associated with the attribution."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: attribution_date
+        data_type: date
+        description: "The date (day) when the attribution occurred."
+        data_tests:
+          - not_null
+
+      - name: channel
+        data_type: varchar
+        description: "The marketing channel through which the attribution was made."
+
+      - name: campaign_id
+        data_type: varchar
+        description: "The identifier for the marketing campaign associated with the attribution."
+        data_tests:
+          - not_null
+
+      - name: attribution_cost
+        data_type: number
+        description: "The cost associated with the attribution, in $ = Customer Aquisition Cost (CAC)"
+        data_tests:
+          - not_null
+
+
+
+  - name: int_users_with_attribution
+    description: |
+      User aquisition costs and other data of appsflyer/google_ads combined.
+      Registration info added incl. organic users.
+      - device_id is unique and not_null (same for user_id)
+      - 'organic' added to channel and campaign_id 
+      - attribution_cost for 'organic' users is 0
+      - attribution_date for 'organic' users is null
+      - registration_date is not_null
+      Row granularity: user_id (= device_id)
+    columns:
+      - name: user_id
+        data_type: varchar
+        description: "A unique identifier for each registered user."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: registration_date
+        data_type: date
+        description: "The date (day) when the user registered."
+        data_tests:
+          - not_null
+
+      - name: device_id
+        data_type: varchar
+        description: "A unique identifier for the device associated with the registration."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: attribution_date
+        data_type: date
+        description: "The date (day) when the attribution occurred. NULL for organic users"
+
+      - name: channel
+        data_type: varchar
+        description: "The marketing channel through which the attribution was made. Including 'organic'."
+        data_tests:
+          - not_null
+
+      - name: campaign_id
+        data_type: varchar
+        description: "The marketing channel through which the attribution was made. Including 'organic'."
+        data_tests:
+          - not_null
+
+      - name: attribution_cost
+        data_type: number
+        description: |
+          The cost associated with the attribution, in $ = Customer Aquisition Cost (CAC)
+          Cost is 0 for o'organic' users.
+        data_tests:
+          - not_null
+
+
+
+  - name: int_user_ltv
+    description: |
+      About revenue. Introduces LTV per user.
+      Combines registration and transaction info.
+      LTV: How much money each user spends within powerflow app over time.
+      LT: When each user spends the money over time, at what stage of his lifetime.
+      Lifetime = transaction_date - registration_date
+      Row granularity is user_id combined with transaction_date (several lines per user_id possible)
+
+    columns:
+      - name: user_id
+        data_type: varchar
+        description: "A unique identifier for each registered user with transactions."
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        data_type: date
+        description: "The date (day) when the transaction occurred."
+        data_tests:
+          - not_null
+
+      - name: registration_date
+        data_type: date
+        description: "The date (day) when the user registered."
+        data_tests:
+          - not_null
+
+      - name: lifetime
+        data_type: number
+        description: "The time (days) between registration_date and transaction_date."
+        data_tests:
+          - not_null
+
+      - name: daily_revenue
+        data_type: number
+        description: "Revenue of the current transaction."
+        data_tests:
+          - not_null
+
+      - name: cumulative_daily_revenue
+        data_type: number
+        description: "Running Sum of all transaction revenues per user over time."
+        data_tests:
+          - not_null
+

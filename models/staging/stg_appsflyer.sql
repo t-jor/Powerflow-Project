@@ -20,7 +20,7 @@ final_af_campaigns as (
 
 )
 
-select count(*), count(distinct device_id), count(distinct campaign_id) from final_af_campaigns
+select * from final_af_campaigns
 --where attribution_cost is null or attribution_cost = 0
 
 

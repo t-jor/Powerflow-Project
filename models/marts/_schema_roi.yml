@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: user_roi
+    description: |
+      Calculates roi per user by combining aquisition costs and revenue:
+      - int_users_with_attribution
+      - int_user_ltv
+      ROI is calculated per user and lifetime (each transaction cumulated).
+      Shows also how users came to powerflow app.
+      Row granularity is user_id combined with lifetime (transaction_date).
+    columns:
+      - name: user_id
+        data_type: varchar
+        description: "A unique identifier for each registered user with transactions."
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        data_type: date
+        description: "The date (day) when the transaction occurred."
+        data_tests:
+          - not_null
+
+      - name: lifetime
+        data_type: number
+        description: "The time (days) between registration_date and transaction_date."
+        data_tests:
+          - not_null
+
+      - name: cumulative_revenue
+        data_type: number
+        description: "Running Sum of all transaction revenues per user over time."
+        data_tests:
+          - not_null
+
+      - name: channel
+        data_type: varchar
+        description: "The marketing channel through which the attribution was made. Including 'organic'."
+        data_tests:
+          - not_null
+
+      - name: campaign_id
+        data_type: varchar
+        description: "The marketing channel through which the attribution was made. Including 'organic'."
+        data_tests:
+          - not_null
+
+      - name: attribution_cost
+        data_type: number
+        description: |
+          The cost associated with the attribution, in $ = Customer Aquisition Cost (CAC)
+          Cost is 0 for o'organic' users.
+        data_tests:
+          - not_null
+
+      - name: costumer_roi
+        data_type: number
+        description: |
+          Return on invest per user and lifetime:
+          cumulated_revenue / attribution_cost
+          For 'organic' users '0'
+        data_tests:
+          - not_null
+
