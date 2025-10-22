@@ -1,5 +1,3 @@
-{{ config(materialized='view') }}
-
 with
 import_transactions as (
 

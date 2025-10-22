@@ -1,5 +1,3 @@
--- {{ config(materialized='table') }}
-
 with
 appsflyer as (
     select * from {{ ref('stg_appsflyer') }}
