@@ -58,8 +58,9 @@ models:
         data_type: number
         description: |
           Return on invest per user and lifetime:
+          (calculated as ltv on a day divided by attribution_cost)
           cumulated_revenue / attribution_cost
-          For 'organic' users '0'
+          For 'organic' users the roi is 0
         data_tests:
           - not_null
 

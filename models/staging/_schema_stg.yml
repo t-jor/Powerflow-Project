@@ -3,6 +3,7 @@ version: 2
 models:
   - name: stg_registrations_clean
     description: |
+      This model filters out users who haven't completed registration.
       Valid registrations:
       - with user_id and device_id is not null
       - user_id and device_id relation is 1:1
