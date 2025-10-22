@@ -1,6 +1,6 @@
 ## ⚡ PowerFlow: Marketing ROI Analytics with dbt & Snowflake
 
-## A dbt Cloud project for modeling, cleaning, and analyzing marketing attribution data to calculate customer-level ROI
+### A dbt Cloud project for modeling, cleaning, and analyzing marketing attribution data to calculate customer-level ROI
 
 ---
 
