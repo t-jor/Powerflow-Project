@@ -16,6 +16,12 @@ models:
         data_tests:
           - not_null
 
+      - name: registration_date
+        data_type: date
+        description: "The date (day) when the user registered."
+        data_tests:
+          - not_null
+
       - name: transaction_date
         data_type: date
         description: "The date (day) when the transaction occurred."
@@ -25,12 +31,6 @@ models:
       - name: lifetime
         data_type: number
         description: "The time (days) between registration_date and transaction_date."
-        data_tests:
-          - not_null
-
-      - name: cumulative_revenue
-        data_type: number
-        description: "Running Sum of all transaction revenues per user over time."
         data_tests:
           - not_null
 
@@ -51,6 +51,12 @@ models:
         description: |
           The cost associated with the attribution, in $ = Customer Aquisition Cost (CAC)
           Cost is 0 for o'organic' users.
+        data_tests:
+          - not_null
+      
+      - name: cumulative_revenue
+        data_type: number
+        description: "Running Sum of all transaction revenues per user over time."
         data_tests:
           - not_null
 
