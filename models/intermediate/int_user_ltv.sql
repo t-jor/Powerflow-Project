@@ -1,16 +1,15 @@
 with 
 registrations as (
     select 
-        distinct user_id
-        , date(min(registration_time)) as registration_date
+        user_id
+        , registration_date
     from {{ ref("stg_registrations_clean") }}
-    group by user_id
 ),
 
 daily_purchases as (
     select
         user_id
-        , date(transaction_time) as transaction_date
+        , transaction_date
         , sum(total_value) as daily_revenue
     from {{ ref('stg_transactions') }}
     group by user_id, transaction_date
