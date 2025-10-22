@@ -1,5 +1,3 @@
-{{ config(materialized='table') }}
-
 with 
 import_registrations as (
 

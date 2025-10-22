@@ -1,5 +1,3 @@
-{{ config(materialized='table')}}
-
 with
 customer_value as (
     select * from {{ ref('int_user_ltv') }}
