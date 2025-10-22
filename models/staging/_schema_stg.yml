@@ -1,0 +1,155 @@
+version: 2
+
+models:
+  - name: stg_registrations_clean
+    description: |
+      This model filters out users who haven't completed registration.
+      Valid registrations:
+      - with user_id and device_id is not null
+      - user_id and device_id relation is 1:1
+      - user_id and device_id need to be unique and not_null
+      Row granularity: user_id (= device_id)
+    columns:
+      - name: user_id
+        data_type: varchar
+        description: "A unique identifier for each user."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: registration_date
+        data_type: date
+        description: "The timestamp when the user registered, casted to YYYY-MM-DD date format."
+        data_tests:
+          - not_null
+
+      - name: device_id
+        data_type: varchar
+        description: "A unique identifier for the device the user is using."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: email
+        data_type: varchar
+        description: "The email address of the user."
+
+      - name: platform
+        data_type: varchar
+        description: "The operating system or platform the user is on (e.g., iOS, Android)."
+
+      - name: country
+        data_type: varchar
+        description: "The country where the user is located, represented by its two-letter code or full name."
+
+
+
+  - name: stg_appsflyer
+    description: |
+      Aggregated user acquisition data from various channel ads and marketing companies, including:
+      - tiktok
+      - youtube
+      - ironsource
+      - admob
+      Row granularity: device_id (user)
+    columns:
+      - name: device_id
+        data_type: varchar
+        description: "A unique identifier for the device associated with the attribution."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: attribution_date
+        data_type: date
+        description: "The timestamp when the attribution occurred, casted to YYYY-MM-DD date format."
+        data_tests:
+          - not_null
+
+      - name: channel
+        data_type: varchar
+        description: "The marketing channel through which the attribution was made (e.g., youtube)."
+
+      - name: campaign_id
+        data_type: varchar
+        description: "The identifier for the marketing campaign associated with the attribution."
+        data_tests:
+          - not_null
+
+      - name: attribution_cost
+        data_type: number
+        description: "The cost associated with the attribution, in $ = Customer Aquisition Cost (CAC)"
+        data_tests:
+          - not_null
+
+
+
+  - name: stg_google_ads
+    description: |
+      User aquisition data via google ads.
+      Aggregated info per campaign.
+      Generic costs per user and campaign deliverd via separate table (seeds: campaign_cost.csv)
+      Row granularity: device_id (= user)
+    columns:
+      - name: device_id
+        data_type: varchar
+        description: "A unique identifier for the device associated with the attribution."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: attribution_date
+        data_type: date
+        description: "The timestamp when the attribution occurred, casted to YYYY-MM-DD date format."
+        data_tests:
+          - not_null
+
+      - name: channel
+        data_type: varchar
+        description: "The marketing channel through which the attribution was made (here: google ads)."
+
+      - name: campaign_id
+        data_type: varchar
+        description: "The identifier or name of the marketing campaign associated with the attribution."
+        data_tests:
+          - not_null
+
+      - name: attribution_cost
+        data_type: number
+        description: "The cost associated with the attribution, in $ = Customer Aquisition Cost (CAC)"
+        data_tests:
+          - not_null
+
+
+
+  - name: stg_transactions
+    description: |
+      Records all purchases made by users within the app.
+      - transaction_id is unique
+      - several transactions per user_id
+      Row granularity: transaction_id
+    columns:
+      - name: user_id
+        data_type: varchar
+        description: "A unique identifier for the user associated with the transaction."
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        data_type: date
+        description: "The timestamp when the transaction occurred, incasted to YYYY-MM-DD date format."
+        data_tests:
+          - not_null
+
+      - name: transaction_id
+        data_type: varchar
+        description: "A unique identifier for the transaction made by the user."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: total_value
+        data_type: number
+        description: "The total value of the transaction in $"
+        data_tests:
+          - not_null
