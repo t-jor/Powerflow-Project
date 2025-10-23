@@ -50,7 +50,7 @@ models:
         data_type: number
         description: |
           The cost associated with the attribution, in $ = Customer Aquisition Cost (CAC)
-          Cost is 0 for o'organic' users.
+          Cost is 0 for 'organic' users.
         data_tests:
           - not_null
       

@@ -1,13 +1,13 @@
--- test1: yml-file für sources über codegen generieren lassen:
+-- step1: yml-file für sources über codegen generieren:
 
 {{ codegen.generate_source(schema_name= 'public', database_name= 'powerflow', include_descriptions=true) }}
 
--- name: besser ändern zu powerflow (public ist der schema name)
+-- name: ändern zu powerflow (public ist der schema name)
 -- database: powerflow
 -- schema: public
 
 
---test2: staging-modelle generieren lassen:
+--step2: staging-modelle generieren:
 
 {{ codegen.generate_base_model(
     source_name='powerflow',
@@ -34,7 +34,7 @@
 ) }}
 
 
---test3: schema.yml mit Beschreibungen und Tests für staging-Modelle generieren lassen:
+--step3: schema.yml mit Beschreibungen für staging-Modelle generieren:
 
 {{ codegen.generate_model_yaml(
     model_names=['stg_registrations_clean']
@@ -53,7 +53,7 @@
 ) }}
 
 
---test4: schema.yml mit Beschreibungen und Tests für int-Modelle generieren lassen:
+--step4: schema.yml mit Beschreibungen für int-Modelle generieren:
 
 {{ codegen.generate_model_yaml(
     model_names=['int_marketing_attribution']
@@ -68,7 +68,7 @@
 ) }}
 
 
---test5: schema.yml mit Beschreibungen und Tests für roi-Modell generieren lassen:
+--step5: schema.yml mit Beschreibungen für roi-Modell generieren lassen:
 
 {{ codegen.generate_model_yaml(
     model_names=['user_roi']
