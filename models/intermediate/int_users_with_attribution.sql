@@ -22,7 +22,7 @@ users_with_attribution as (
        , coalesce(ma.campaign_id, 'organic') as campaign_id
        , coalesce(ma.attribution_cost, 0) as attribution_cost
        
-    from registrations_clean as reg 
+    from user_registrations as reg 
     left join marketing_attribution as ma
     on reg.device_id = ma.device_id
 )
