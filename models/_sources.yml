@@ -1,10 +1,10 @@
 version: 2
 
 sources:
-  - name: powerflow    #name of the source you will reference in the models
-    database: powerflow #name of database
+  - name: powerflow
+    database: powerflow
     schema: public
-    tables:   #name all of the tables you would reference in the models
+    tables:
       - name: registrations_raw
       - name: appsflyer_raw
       - name: google_ads

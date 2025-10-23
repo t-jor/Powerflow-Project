@@ -1,5 +1,5 @@
 with
-registrations_clean as (
+user_registrations as (
 
     select * from {{ ref('stg_registrations_clean') }}
 
@@ -11,6 +11,7 @@ marketing_attribution as (
 
 ),
 
+-- campaign costs as attribution_cost (= costumer aquisition cost)
 users_with_attribution as (
     select 
        reg.user_id

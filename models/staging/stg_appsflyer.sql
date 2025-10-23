@@ -19,7 +19,6 @@ final_af_campaigns as (
 )
 
 select * from final_af_campaigns
---where attribution_cost is null or attribution_cost = 0
 
 
 /*

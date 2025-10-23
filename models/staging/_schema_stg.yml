@@ -8,7 +8,7 @@ models:
       - with user_id and device_id is not null
       - user_id and device_id relation is 1:1
       - user_id and device_id need to be unique and not_null
-      Row granularity: user_id (= device_id)
+      Row granularity: user_id (and device_id)
     columns:
       - name: user_id
         data_type: varchar
@@ -51,7 +51,7 @@ models:
       - youtube
       - ironsource
       - admob
-      Row granularity: device_id (user)
+      Row granularity: device_id (and user_id)
     columns:
       - name: device_id
         data_type: varchar
@@ -89,7 +89,7 @@ models:
       User aquisition data via google ads.
       Aggregated info per campaign.
       Generic costs per user and campaign deliverd via separate table (seeds: campaign_cost.csv)
-      Row granularity: device_id (= user)
+      Row granularity: device_id (and user_id)
     columns:
       - name: device_id
         data_type: varchar
@@ -137,7 +137,7 @@ models:
 
       - name: transaction_date
         data_type: date
-        description: "The timestamp when the transaction occurred, incasted to YYYY-MM-DD date format."
+        description: "The timestamp when the transaction occurred, casted to YYYY-MM-DD date format."
         data_tests:
           - not_null
 

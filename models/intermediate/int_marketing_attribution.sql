@@ -1,16 +1,20 @@
 with
-appsflyer as (
+campaign_cost_af as (
+
     select * from {{ ref('stg_appsflyer') }}
+
 ),
 
-google_ads_prep as (
+campaign_cost_ga as (
+
     select * from {{ ref('stg_google_ads') }}
+
 ),
 
 marketing_attribution as (
-    select * from appsflyer
+    select * from campaign_cost_af
     union
-    select * from google_ads_prep
+    select * from campaign_cost_ga
 )
 
 select * from marketing_attribution
