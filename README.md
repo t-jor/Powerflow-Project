@@ -1,6 +1,6 @@
-## ⚡ PowerFlow: Marketing ROI Analytics with dbt & Snowflake
+# ⚡ PowerFlow: Marketing ROI Analytics with dbt & Snowflake
 
-### A dbt Cloud project for modeling, cleaning, and analyzing marketing attribution data to calculate customer-level ROI
+## A dbt Cloud project for modeling, cleaning, and analyzing marketing attribution data to calculate customer-level ROI
 
 ---
 
@@ -132,7 +132,8 @@ dbt seed
 - Branching and version control handled via **GitHub** (`main` and feature branches).
 - **Environment-specific schemas**:  
   - `stg` for staging views  
-  - `int` for intermediate views  
+  - `int` for intermediate views
+  - `lookup` for seed- or mapping-based reference tables
   - `marts` for final analytical table
 - **Jobs in dbt Cloud** not scheduled (static training data) - manually triggered runs to build and test all models:
 
@@ -147,15 +148,30 @@ dbt seed
 The resulting DAG (Directed Acyclic Graph) follows this simplified structure:
 
 ```bash
+# Sources (raw data)
+source_registrations_raw
+source_appsflyer_raw
+source_google_ads
+source_transactions
+
+# Seed (manual mapping or lookup table)
+seed_campaign_cost
+
+        ↓
+# Staging models (data cleaning & standardization)
 stg_appsflyer
 stg_google_ads
 stg_registrations_clean
 stg_transactions
+
         ↓
+# Intermediate models (business logic & joins)
 int_marketing_attribution
 int_users_with_attribution
 int_user_ltv
+
         ↓
+# Final marts (reporting-ready tables)
 user_roi
 ```
 
