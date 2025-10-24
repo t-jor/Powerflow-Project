@@ -20,9 +20,9 @@ models:
   powerflow:
     +materialized: view
     staging:
-      +schema: stg
+      +schema: staging
     intermediate:
-      +schema: int
+      +schema: intermediate
     marts:
       +schema: marts
       +materialized: table
