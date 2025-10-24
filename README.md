@@ -30,13 +30,14 @@ All transformations are fully version-controlled via GitHub and orchestrated in 
 
 ## 🔄 Data Flow & Model Layers
 
-The data pipeline follows the **standard dbt layered architecture**:
+The data pipeline follows the **standard dbt layered architecture**.
+Each layer builds on the previous one, ensuring full traceability from raw data to ROI metrics
 
 ```text
 sources  →  staging  →  intermediate  →  marts
 ```
 
-Each layer builds on the previous one, ensuring full traceability from raw data to ROI metrics.
+---
 
 ## 🧩 Data Sources Overview
 
@@ -75,6 +76,8 @@ An additional **seed file** supplements the missing cost information for Google 
 |-------|--------------|
 | `campaign_cost.csv` | Contains standardized *cost per user* for each Google Ads campaign, used to calculate acquisition cost and ROI metrics. |
 
+---
+
 ### 2️⃣ Staging Models (`stg_`)
 
 Each source has a dedicated **staging model** to clean, rename, and standardize columns.  
@@ -89,6 +92,8 @@ This layer ensures consistent naming conventions and data formats across all sou
 
 All staging models are **materialized as views** for lightweight transformations.
 
+---
+
 ### 3️⃣ Intermediate Models (`int_`)
 
 These models combine and enrich data across multiple staging sources.  
@@ -99,6 +104,8 @@ They implement business logic such as user attribution, LTV calculations, and ca
 | `int_marketing_attribution.sql` | Links each user to their originating marketing source |
 | `int_users_with_attribution.sql` | Consolidates user registration with marketing data - adds organically acquired customers |
 | `int_user_ltv.sql` | Calculates cumulative lifetime value (LTV) per user based on transactions |
+
+---
 
 ### 4️⃣ Mart Models (`marts/`)
 
