@@ -1,6 +1,6 @@
 # ⚡ PowerFlow: Marketing ROI Analytics with dbt & Snowflake
 
-## A dbt Cloud project for modeling, cleaning, and analyzing marketing attribution data to calculate customer-level ROI
+## A dbt Cloud project for modeling, cleaning & analyzing multi-source marketing data to calculate user-level ROI in Snowflake
 
 ---
 
@@ -20,7 +20,7 @@ All transformations are fully version-controlled via GitHub and orchestrated in 
 
 | Component | Purpose |
 |------------|----------|
-| **dbt Cloud** | Transformation and orchestration environment |
+| **dbt Cloud** | Transformation and orchestration with environment-based schema logic |
 | **Snowflake** | Cloud data warehouse used as target database |
 | **GitHub** | Version control for all dbt models and documentation |
 | **dbt Packages** | `dbt_utils`, `codegen` for testing and documentation support |
@@ -36,10 +36,44 @@ The data pipeline follows the **standard dbt layered architecture**:
 sources  →  staging  →  intermediate  →  marts
 ```
 
-### 1️⃣ Sources
+Each layer builds on the previous one, ensuring full traceability from raw data to ROI metrics.
 
-Raw input tables (e.g., from app tracking, Google Ads, and internal systems).  
+## 🧩 Data Sources Overview
+
+The PowerFlow project integrates both **in-app user data** and **marketing attribution data** to enable user-level ROI analysis.  
+Both marketing sources (AppsFlyer and Google Ads) track users based on a unique `device_id`.  
+In this dataset, each device corresponds to exactly one user — allowing consistent attribution and cost allocation across all tables.
+
+AppsFlyer provides *user-level acquisition costs* directly within its data, while Google Ads only contains *device-level attribution details* (campaign and attribution date).  
+Standardized campaign cost information is therefore added later via a separate seed file.
+
+---
+
+### 🗂️ 1️⃣ Sources
+
+The project uses four primary raw input tables — two related to user activity within the app and two related to marketing attribution.  
 They are defined in `_sources.yml` and stored in the Snowflake schema `powerflow.public`.
+
+| Source | Description |
+|---------|--------------|
+| `registrations_raw` | Contains key information on user registrations, including `device_id`, registration date, and country. |
+| `transactions` | Records all user purchases and revenue events made within the app. |
+| `appsflyer_raw` | Aggregates attribution data for each `device_id` from multiple marketing channels (e.g., TikTok, YouTube, IronSource, AdMob). Includes *user-level cost data* for each acquired user. |
+| `google_ads` | Provides *device-level attribution data* (campaign and attribution date) for users acquired via Google Ads. Does **not** include cost information — costs are joined later from the seed file. |
+
+> ⚙️ All raw tables serve as the foundation for cleaning and transformation in the staging layer.  
+> 🕒 **Note:** The `attribution_date` in marketing tables represents the date of the ad interaction that led to the app install.  
+> It may differ from the `registration_date` in user data, which captures when the user actually registered in the app.
+
+---
+
+### 💾 Seed File
+
+An additional **seed file** supplements the missing cost information for Google Ads campaigns:
+
+| Seed | Description |
+|-------|--------------|
+| `campaign_cost.csv` | Contains standardized *cost per user* for each Google Ads campaign, used to calculate acquisition cost and ROI metrics. |
 
 ### 2️⃣ Staging Models (`stg_`)
 
@@ -48,10 +82,10 @@ This layer ensures consistent naming conventions and data formats across all sou
 
 | Model | Description |
 |--------|--------------|
-| `stg_appsflyer.sql` | Cleans app install and attribution data |
-| `stg_google_ads.sql` | Normalizes campaign data from Google Ads |
-| `stg_registrations_clean.sql` | Prepares user registration records |
-| `stg_transactions.sql` | Standardizes transaction data for further aggregation |
+| `stg_appsflyer.sql` | Standardizes attribution data from AppsFlyer platform. |
+| `stg_google_ads.sql` | Normalizes and enriches Google Ads data – adds channel mapping and standardized campaign costs. |
+| `stg_registrations_clean.sql` | Cleans and validates user registration data – keeps only valid registrations. |
+| `stg_transactions.sql` | Standardizes transaction data for consistent aggregation. |
 
 All staging models are **materialized as views** for lightweight transformations.
 
@@ -88,9 +122,9 @@ ROI = User_Lifetime_Revenue / Acquisition_Cost
 ```
 
 For **organically acquired users**, acquisition cost is set to `0`.  
-The model handles this gracefully (e.g., via `DIV0()` logic in Snowflake) to avoid division errors and maintain meaningful output.
+The model handles this via `DIV0()` logic in Snowflake to avoid division errors and maintain meaningful output.
 
-The result allows comparing **paid vs. organic** acquisition performance, identifying which marketing channels deliver the highest return.
+The final table enables comparison of **paid vs. organic** acquisition performance and highlights which marketing channels deliver the highest lifetime return.
 
 ---
 
@@ -100,7 +134,7 @@ Data quality is ensured through a combination of **generic and custom dbt tests*
 
 | Type | Example |
 |------|----------|
-| **Generic Tests** | `unique`, `not_null`, `accepted_values` on keys and categorical columns |
+| **Generic Tests** | `unique`, `not_null` on keys and categorical columns |
 | **Custom Test** | `positive_lifetime.sql` verifies that each user’s lifetime value is positive |
 | **YAML Documentation** | `_schema_stg.yml`, `_schema_int.yml`, `_schema_roi.yml` describe columns and purposes |
 
@@ -116,7 +150,7 @@ dbt test
 
 The project includes one static seed:
 
-- **`campaign_cost.csv`** – used to join campaign metadata and total cost information with attribution results.
+- **`campaign_cost.csv`** – used to join campaign metadata and cost information with attribution results for google ads.
 
 Seeds are loaded via:
 
@@ -128,52 +162,67 @@ dbt seed
 
 ## ⚙️ Deployment & Orchestration
 
-- The project is deployed in **dbt Cloud** with a connection to **Snowflake**.
-- Branching and version control handled via **GitHub** (`main` and feature branches).
-- **Environment-specific schemas**:  
-  - `stg` for staging views  
-  - `int` for intermediate views
-  - `lookup` for seed- or mapping-based reference tables
-  - `marts` for final analytical table
-- **Jobs in dbt Cloud** not scheduled (static training data) - manually triggered runs to build and test all models:
+- The project is deployed in **dbt Cloud** with a connection to **Snowflake**.  
+- Branching and version control are managed via **GitHub** (`main` and feature branches).  
+- Two environments are defined in dbt Cloud to separate development and production:
 
-  ```bash
-  dbt build --select +user_roi
-  ```
+  | Environment | DBT_ENV_NAME | Behavior |
+  |--------------|--------------|-----------|
+  | `Develop_Powerflow` | `dev` | All models are built in the developer’s default schema (`dbt_tjortzig`). |
+  | `Prod_Powerflow` | `prod` | Models are deployed into environment-specific schemas as listed below. |
 
 ---
 
-## 📈 Example DAG
+### 🏗️ Environment-Specific Schemas
 
-The resulting DAG (Directed Acyclic Graph) follows this simplified structure:
+A custom macro (`macros/generate_schema_name.sql`) dynamically assigns schemas based on the active environment.  
+This ensures that all development models remain isolated, while production models follow a structured naming convention.
+
+```sql
+{% macro generate_schema_name(custom_schema_name, node) -%}
+    {% set default_schema = target.schema -%}
+    {% set env = env_var('DBT_ENV_NAME') -%}
+
+    {% if custom_schema_name is none or env == 'dev' -%}
+        {{ default_schema }}
+    {% else -%}
+        {{ custom_schema_name | trim }}
+    {% endif -%}
+{%- endmacro %}
+```
+
+**Schema naming in production:**
+
+- `staging` – for staging views  
+- `intermediate` – for intermediate transformations  
+- `lookup` – for seed- or mapping-based reference tables  
+- `marts` – for final analytical tables  
+
+---
+
+### 🧭 Job Execution
+
+**Jobs in dbt Cloud** are *not scheduled* (static training data) to ensure deterministic rebuilds for each full pipeline run.
+
+Example command used for full builds and tests:
 
 ```bash
-# Sources (raw data)
-source_registrations_raw
-source_appsflyer_raw
-source_google_ads
-source_transactions
-
-# Seed (manual mapping or lookup table)
-seed_campaign_cost
-
-        ↓
-# Staging models (data cleaning & standardization)
-stg_appsflyer
-stg_google_ads
-stg_registrations_clean
-stg_transactions
-
-        ↓
-# Intermediate models (business logic & joins)
-int_marketing_attribution
-int_users_with_attribution
-int_user_ltv
-
-        ↓
-# Final marts (reporting-ready tables)
-user_roi
+dbt build --select +user_roi
 ```
+
+---
+
+## 📈 PowerFlow DAG Overview
+
+The following Directed Acyclic Graph (DAG) shows the full lineage of models within the PowerFlow project —
+from raw sources and seeds to final analytical tables.  
+It highlights the clear separation between staging, intermediate, and mart layers, following dbt’s modular design principles.
+
+<p align="center">
+  <img src="./docs/dag_powerflow.png" alt="PowerFlow dbt DAG" width="85%" style="border: 1px solid #ccc; border-radius: 6px;"/>
+</p>
+
+*Visualization generated from dbt Cloud — each node represents a model or data source in Snowflake.*
 
 ---
 
@@ -187,6 +236,7 @@ Throughout this project, several **dbt best practices** were applied:
 - ✅ Documentation embedded in YAML for every model  
 - ✅ Custom test for positive lifetime value validation  
 - ✅ Separation of logic into layered models for maintainability
+- ✅ Use of environment variables for dynamic schema routing (via custom macro)
 
 These improvements make the project easier to understand, extend, and present as a professional data transformation workflow.
 
@@ -194,7 +244,7 @@ These improvements make the project easier to understand, extend, and present as
 
 ## 🚀 Next Steps
 
-Possible extensions include:
+These ideas outline how the PowerFlow project could evolve into a production-grade marketing analytics pipeline:
 
 - Adding **channel-level ROI dashboards** in Tableau or Looker Studio  
 - Implementing **incremental models** for faster runs on large datasets  
