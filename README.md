@@ -4,15 +4,29 @@
 
 ---
 
-## 🧭 Project Overview
+## 📘 Project Overview
 
-**PowerFlow** is an end-to-end analytics project built with **dbt Cloud** and **Snowflake**.  
-It demonstrates how raw marketing and transaction data can be transformed into a clean, analytics-ready data model that enables reliable ROI calculations per customer.
+This portfolio project simulates a **Business Intelligence case study** for the fictional fitness app **PowerFlow**, focusing on marketing ROI analysis and modern data modeling using **dbt Cloud** and **Snowflake**.
 
-The project simulates a multi-source marketing environment — combining user registration, campaign cost, transaction, and attribution data — to analyze how effectively marketing spend converts into revenue.
+### 💼 Business Context
 
-This implementation follows **modern data modeling best practices** with clearly separated layers for **staging**, **intermediate**, and **mart** models.  
-All transformations are fully version-controlled via GitHub and orchestrated in dbt Cloud.
+**PowerFlow** is a digital fitness app offering subscription-based workout plans with guided video instructions.  
+The **Marketing Department** aims to identify which channels and campaigns deliver the strongest financial returns across the user lifecycle.  
+The core business goal is to understand **which marketing channel and/or campaign ID achieves the highest Return on Investment (ROI)** at different points in a user's lifetime — enabling smarter budget allocation and improved user acquisition efficiency.
+
+### 🧠 Analytical Approach
+
+This project translates that business challenge into a reproducible data model built with **dbt Cloud** and **Snowflake**.  
+It integrates and transforms multiple data sources into a unified, analytics-ready ROI dataset.
+
+Using the shared `device_id` as the linking key, the models calculate:
+
+- Cost per user and campaign  
+- Revenue and profit by channel and cohort  
+- ROI trends over time
+
+The dbt pipeline follows a **three-layer architecture** (*staging → intermediate → marts*) with modular SQL logic, automated tests, and clear documentation to ensure data quality and transparency.  
+All transformations are version-controlled via GitHub and orchestrated in dbt Cloud.
 
 ---
 
@@ -45,8 +59,9 @@ The PowerFlow project integrates both **in-app user data** and **marketing attri
 Both marketing sources (AppsFlyer and Google Ads) track users based on a unique `device_id`.  
 In this dataset, each device corresponds to exactly one user — allowing consistent attribution and cost allocation across all tables.
 
-AppsFlyer provides *user-level acquisition costs* directly within its data, while Google Ads only contains *device-level attribution details* (campaign and attribution date).  
-Standardized campaign cost information is therefore added later via a separate seed file.
+- **AppsFlyer:** provides *user-level acquisition costs* directly within its data, while
+- **Google Ads:** only contains *device-level attribution details* (campaign and attribution date). Standardized campaign cost information is therefore added later via a separate seed file.
+- **In-app transactions:** delivers user purchase and revenue data.
 
 ---
 
@@ -263,4 +278,4 @@ These ideas outline how the PowerFlow project could evolve into a production-gra
 ## 👨‍💻 Author
 
 **Thomas Jortzig**  
-Powerflow-Project | 10.2025  
+Powerflow-Project | 10.2025
